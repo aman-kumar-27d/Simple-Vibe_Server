@@ -2,7 +2,7 @@
 
 # Portfolio Backend Server
 
-A robust Node.js/Express backend server for your portfolio website with enhanced email verification, contact form handling, and security features.
+A robust Node.js/Express backend server for Simple-Vibe_Portfolio website with enhanced email verification, contact form handling, and security features.
 
 ## Features
 
