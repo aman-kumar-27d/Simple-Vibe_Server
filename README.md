@@ -1,8 +1,29 @@
 # Portfolio Backend Server
 
-# Portfolio Backend Server
+A robust, well-structured Node.js/Express backend server for portfolio websites with enhanced email verification, contact form handling, and comprehensive security features.
 
-A robust Node.js/Express backend server for Simple-Vibe_Portfolio website with enhanced email verification, contact form handling, and security features.
+## 🏗️ Architecture Overview
+
+This project follows a modular architecture with separation of concerns:
+
+```
+src/
+├── config/           # Configuration files
+│   ├── emailConfig.ts    # Email service configuration
+│   └── rateLimiter.ts    # Rate limiting configuration
+├── routes/           # API route handlers
+│   ├── index.ts         # Main router with route mounting
+│   ├── contact.ts       # Contact form handling
+│   ├── email.ts         # Email validation endpoint
+│   └── download.ts      # File download endpoints
+├── types/            # TypeScript type definitions
+│   └── index.ts         # Shared interfaces and types
+├── utils/            # Utility functions
+│   ├── emailValidator.ts # Email validation logic
+│   └── sanitizer.ts     # Input sanitization utilities
+├── middleware/       # Custom middleware (if needed)
+└── server.ts         # Main application entry point
+```
 
 ## Features
 
