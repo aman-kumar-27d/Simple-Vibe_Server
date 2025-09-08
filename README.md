@@ -11,6 +11,10 @@ src/
 ├── config/           # Configuration files
 │   ├── emailConfig.ts    # Email service configuration
 │   └── rateLimiter.ts    # Rate limiting configuration
+├── middleware/       # Custom middleware
+│   ├── errorHandler.ts   # Centralized error handling
+│   ├── maintenanceMode.ts # Maintenance mode middleware
+│   └── requestMonitoring.ts # Security monitoring middleware
 ├── routes/           # API route handlers
 │   ├── index.ts         # Main router with route mounting
 │   ├── contact.ts       # Contact form handling
@@ -20,8 +24,8 @@ src/
 │   └── index.ts         # Shared interfaces and types
 ├── utils/            # Utility functions
 │   ├── emailValidator.ts # Email validation logic
-│   └── sanitizer.ts     # Input sanitization utilities
-├── middleware/       # Custom middleware
+│   ├── sanitizer.ts     # Input sanitization utilities
+│   └── logger.ts        # Production-ready logging utility
 └── server.ts         # Main application entry point
 ```
 
@@ -39,6 +43,10 @@ src/
 - **Helmet.js**: Adds various HTTP headers for security
 - **CORS Protection**: Configurable cross-origin resource sharing
 - **Request Size Limits**: Prevents large payload attacks
+- **Maintenance Mode**: Built-in maintenance mode for graceful updates and downtime
+- **Request Monitoring**: Detection of suspicious patterns and potential security threats
+- **Centralized Error Handling**: Consistent error responses and logging
+- **Production Logging**: Advanced logging with level control and log rotation
 
 ### 📧 Contact Form
 - **Email Sending**: Uses Nodemailer with customizable email providers
@@ -78,6 +86,10 @@ src/
    NODE_ENV=development
    FRONTEND_URL=http://localhost:3000
 
+   # Maintenance Mode
+   MAINTENANCE_MODE=false
+   MAINTENANCE_DURATION=30 minutes
+
    # Email Configuration
    EMAIL_SERVICE=gmail
    EMAIL_HOST=smtp.gmail.com
@@ -85,6 +97,12 @@ src/
    EMAIL_USER=your-email@gmail.com
    EMAIL_PASS=your-app-password
    RECIPIENT_EMAIL=your-email@gmail.com
+   
+   # Security (optional)
+   JWT_SECRET=your-super-secret-jwt-key-here
+   
+   # Logging (optional)
+   LOG_LEVEL=info
    ```
 
 ## Gmail Setup
@@ -389,12 +407,15 @@ fetch('/api/download/resume', { method: 'HEAD' })
 
 ## Production Deployment
 
+For detailed production deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
 1. Set `NODE_ENV=production`
 2. Use a process manager like PM2
 3. Set up proper logging
 4. Configure reverse proxy (nginx)
 5. Use HTTPS in production
 6. Consider using a dedicated email service (SendGrid, AWS SES)
+7. Enable maintenance mode during updates
 
 ## Troubleshooting
 
@@ -432,6 +453,13 @@ fetch('/api/download/resume', { method: 'HEAD' })
 - **typescript**: Type safety
 - **ts-node**: TypeScript execution
 - **@types/***: TypeScript definitions
+- **jest**: Testing framework
+
+## Documentation
+- **API Documentation**: See above for endpoint details
+- **Deployment Guide**: See [DEPLOYMENT.md](DEPLOYMENT.md)
+- **Testing Documentation**: See [TESTING.md](TESTING.md)
+- **Refactoring Summary**: See [REFACTORING_SUMMARY.md](REFACTORING_SUMMARY.md)
 
 ## License
 

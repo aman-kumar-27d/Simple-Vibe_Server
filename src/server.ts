@@ -6,6 +6,8 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import routes from './routes/index';
+import { maintenanceMode } from './middleware/maintenanceMode';
+import { requestMonitoring } from './middleware/requestMonitoring';
 
 // Load environment variables
 dotenv.config();
@@ -43,6 +45,9 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 // Rate limiting
 app.use(globalLimiter);
 
+// Maintenance mode (must be before routes)
+app.use(maintenanceMode);
+
 // Middleware
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
@@ -53,37 +58,46 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Security monitoring middleware
+app.use(requestMonitoring);
+
 // Routes
 app.use('/api', routes);
 
 // Health check endpoint
 app.get('/', (req, res) => {
+  const packageJson = require('../package.json');
+  const uptime = process.uptime();
+  
+  // Format uptime
+  const uptimeFormatted = () => {
+    const days = Math.floor(uptime / 86400);
+    const hours = Math.floor((uptime % 86400) / 3600);
+    const minutes = Math.floor(((uptime % 86400) % 3600) / 60);
+    const seconds = Math.floor(((uptime % 86400) % 3600) % 60);
+    
+    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  };
+
   res.json({ 
     message: 'Portfolio Backend Server is running!',
     status: 'healthy',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    version: packageJson.version,
+    environment: process.env.NODE_ENV || 'development',
+    uptime: uptimeFormatted(),
+    maintenance: process.env.MAINTENANCE_MODE === 'true'
   });
 });
 
 // Static files for assets
 app.use('/assets', express.static(path.join(__dirname, '../assets')));
 
-// Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  // Handle JSON parsing errors
-  if (err instanceof SyntaxError && 'body' in err) {
-    return res.status(400).json({
-      error: 'Invalid JSON',
-      message: 'The request body contains invalid JSON format.'
-    });
-  }
+// Import centralized error handler
+import { errorHandler } from './middleware/errorHandler';
 
-  console.error('Error:', err);
-  return res.status(500).json({ 
-    error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong!'
-  });
-});
+// Error handling middleware
+app.use(errorHandler);
 
 // 404 handler
 app.use('*', (req, res) => {
