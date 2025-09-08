@@ -48,7 +48,7 @@ describe('Full API E2E Tests', () => {
 
       expect(emailValidation.body.isValid).toBe(true);
 
-      // Then, submit the contact form (expect 500 due to missing email credentials in test environment)
+      // Then, submit the contact form (now should succeed in test environment)
       const contactSubmission = await request(app)
         .post('/api/contact')
         .send({
@@ -57,9 +57,10 @@ describe('Full API E2E Tests', () => {
           email: 'john.doe@gmail.com',
           message: 'This is a complete workflow test with sufficient message length.'
         })
-        .expect(500); // Expected to fail due to email authentication
+        .expect(200); // Now succeeds with our mock email transporter
 
-      expect(contactSubmission.body.error).toBe('Failed to send email');
+      expect(contactSubmission.body.success).toBe(true);
+      expect(contactSubmission.body.message).toContain('Email sent successfully');
     });
   });
 

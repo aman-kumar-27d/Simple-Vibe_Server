@@ -26,6 +26,18 @@ export const emailConfig = {
 };
 
 export const createTransporter = () => {
+  // For test environment, use a mock transporter to avoid real email sending
+  if (process.env.NODE_ENV === 'test') {
+    return {
+      sendMail: async (mailOptions: any) => {
+        console.log('Test mode: Email would be sent with:', 
+          { to: mailOptions.to, subject: mailOptions.subject });
+        return { messageId: 'test-message-id' };
+      }
+    };
+  }
+  
+  // For production, use the real nodemailer transport
   return nodemailer.createTransport({
     service: emailConfig.service,
     host: emailConfig.host,
