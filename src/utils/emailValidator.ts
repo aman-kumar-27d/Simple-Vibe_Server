@@ -17,6 +17,11 @@ const commonDomainTypos: { [key: string]: string } = {
 };
 
 export const validateEmail = (email: string): EmailValidationResult => {
+  // Check email length first
+  if (email.length > 254) {
+    return { isValid: false, error: 'Email address is too long' };
+  }
+
   // Basic format validation
   if (!validator.isEmail(email)) {
     return { isValid: false, error: 'Invalid email format' };
@@ -26,11 +31,6 @@ export const validateEmail = (email: string): EmailValidationResult => {
   const normalizedEmail = validator.normalizeEmail(email);
   if (!normalizedEmail) {
     return { isValid: false, error: 'Invalid email format' };
-  }
-
-  // Check email length
-  if (email.length > 254) {
-    return { isValid: false, error: 'Email address is too long' };
   }
 
   // Extract domain

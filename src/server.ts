@@ -70,8 +70,16 @@ app.use('/assets', express.static(path.join(__dirname, '../assets')));
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  // Handle JSON parsing errors
+  if (err instanceof SyntaxError && 'body' in err) {
+    return res.status(400).json({
+      error: 'Invalid JSON',
+      message: 'The request body contains invalid JSON format.'
+    });
+  }
+
   console.error('Error:', err);
-  res.status(500).json({ 
+  return res.status(500).json({ 
     error: 'Internal server error',
     message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong!'
   });
@@ -85,8 +93,14 @@ app.use('*', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
-  console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🌐 Access the server at: http://localhost:${PORT}`);
-});
+// Export app for testing
+export default app;
+
+// Only start server if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server is running on port ${PORT}`);
+    console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🌐 Access the server at: http://localhost:${PORT}`);
+  });
+}
